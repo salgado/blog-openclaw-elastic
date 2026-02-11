@@ -1,0 +1,11 @@
+# Elasticsearch Serverless Configuration
+ELASTICSEARCH_URL=https://xxxxxx.es.us-central1.gcp.elastic.cloud:443
+ELASTICSEARCH_API_KEY=xxxxxxx
+ELASTICSEARCH_INDEX=fresh_produce
+
+# Discord Bot Configuration (fill in when ready)
+DISCORD_TOKEN='xxxxxxxx'
+
+# Vercel Configuration (optional)
+VERCEL_TOKEN=xxxxxxx
+VERCEL_PROJECT_ID=xxxxxx

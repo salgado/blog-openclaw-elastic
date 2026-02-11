@@ -1,0 +1,18 @@
+# Elasticsearch Reporter - Python Dependencies
+# Auto-installed by OpenClaw when skill is loaded
+
+# Elasticsearch
+elasticsearch>=8.11.0
+
+# Configuration
+python-dotenv>=1.0.0
+
+# Discord Bot
+discord.py>=2.3.2
+
+# HTTP requests
+requests>=2.31.0
+
+# Optional: For advanced features
+# pandas>=2.0.0  # Data manipulation
+# matplotlib>=3.7.0  # Additional visualizations

@@ -1,0 +1,182 @@
+{
+  "name": "elasticsearch-reporter",
+  "version": "2.1.0",
+  "description": "Complete Elasticsearch Serverless integration with ELSER semantic search, analytics dashboards, Discord bot, and Vercel deployment. Orchestrates multi-service workflows for intelligent search automation.",
+  "author": "Alex Salgado ",
+  "license": "MIT",
+  "repository": "https://github.com/salgado/blog-openclaw-elastic",
+  "keywords": [
+    "elasticsearch",
+    "elser",
+    "semantic-search",
+    "ml",
+    "discord",
+    "vercel",
+    "analytics",
+    "openclaw",
+    "ai-agents"
+  ],
+  "openclaw": {
+    "minVersion": "1.0.0"
+  },
+  "runtime": {
+    "python": {
+      "version": ">=3.9",
+      "requirements": "requirements.txt",
+      "venv": true
+    },
+    "node": {
+      "version": ">=18.0.0",
+      "packages": ["vercel"]
+    }
+  },
+  "config": {
+    "schema": {
+      "ELASTICSEARCH_URL": {
+        "type": "string",
+        "description": "Elasticsearch Serverless endpoint URL",
+        "required": true,
+        "example": "https://your-cluster.es.us-central1.gcp.elastic.cloud:443"
+      },
+      "ELASTICSEARCH_API_KEY": {
+        "type": "string",
+        "description": "Elasticsearch API key (encoded)",
+        "required": true,
+        "secret": true
+      },
+      "ELASTICSEARCH_INDEX": {
+        "type": "string",
+        "description": "Index name for products",
+        "required": false,
+        "default": "fresh_produce"
+      },
+      "DISCORD_TOKEN": {
+        "type": "string",
+        "description": "Discord bot token",
+        "required": false,
+        "secret": true
+      },
+      "DISCORD_GUILD_ID": {
+        "type": "string",
+        "description": "Discord server/guild ID",
+        "required": false
+      },
+      "VERCEL_TOKEN": {
+        "type": "string",
+        "description": "Vercel API token for deployments",
+        "required": false,
+        "secret": true
+      },
+      "VERCEL_PROJECT_ID": {
+        "type": "string",
+        "description": "Vercel project ID",
+        "required": false
+      }
+    }
+  },
+  "commands": {
+    "setup-elasticsearch": {
+      "description": "Complete Elasticsearch setup: create index, load products, deploy ELSER, generate embeddings",
+      "script": "scripts/setup_elasticsearch.py",
+      "args": {
+        "force": {
+          "type": "boolean",
+          "description": "Force reindex even if data exists",
+          "default": false
+        },
+        "skip-elser": {
+          "type": "boolean",
+          "description": "Skip ELSER deployment (use if already deployed)",
+          "default": false
+        }
+      }
+    },
+    "semantic-search": {
+      "description": "Perform semantic search using ELSER",
+      "script": "scripts/semantic_search_elser.py",
+      "args": {
+        "query": {
+          "type": "string",
+          "description": "Search query in natural language",
+          "required": true
+        },
+        "limit": {
+          "type": "number",
+          "description": "Maximum number of results",
+          "default": 10
+        }
+      }
+    },
+    "generate-report": {
+      "description": "Generate HTML report from semantic search results",
+      "script": "scripts/semantic_report_generator.py",
+      "args": {
+        "query": {
+          "type": "string",
+          "description": "Search query",
+          "required": true
+        },
+        "limit": {
+          "type": "number",
+          "description": "Number of products in report",
+          "default": 10
+        }
+      }
+    },
+    "analytics-dashboard": {
+      "description": "Generate analytics dashboard with aggregations and charts",
+      "script": "scripts/analytics_dashboard.py",
+      "args": {
+        "output": {
+          "type": "string",
+          "description": "Output file path",
+          "default": "reports/analytics_dashboard.html"
+        }
+      }
+    },
+    "deploy-vercel": {
+      "description": "Deploy reports to Vercel CDN",
+      "script": "scripts/deploy_vercel.py",
+      "args": {
+        "prod": {
+          "type": "boolean",
+          "description": "Deploy to production",
+          "default": true
+        }
+      }
+    },
+    "discord-bot": {
+      "description": "Run Discord bot with semantic search commands",
+      "script": "scripts/discord_bot.py",
+      "daemon": true,
+      "args": {
+        "restart": {
+          "type": "boolean",
+          "description": "Restart if already running",
+          "default": false
+        }
+      }
+    },
+    "full-workflow": {
+      "description": "Execute complete workflow: semantic search → generate report → deploy to Vercel",
+      "script": "scripts/full_workflow.py",
+      "args": {
+        "query": {
+          "type": "string",
+          "description": "Search query",
+          "required": true
+        }
+      }
+    },
+    "check-status": {
+      "description": "Check Elasticsearch connection and ELSER status",
+      "script": "scripts/check_status.py"
+    }
+  },
+  "data": {
+    "products": "data/products.json"
+  },
+  "outputs": {
+    "reports": "reports/"
+  }
+}
