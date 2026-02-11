@@ -1,0 +1,150 @@
+# =============================================================
+# SearchClaw - Kibana DevTools Script
+# Execute cada bloco separadamente no DevTools (Ctrl+Enter)
+# =============================================================
+
+
+# -------------------------------------------------------------
+# 1. Criar Pipeline de Ingestão ELSER
+# -------------------------------------------------------------
+
+PUT _ingest/pipeline/elser-fresh-produce-pipeline
+{
+  "description": "Ingest pipeline for ELSER semantic search on fresh produce",
+  "processors": [
+    {
+      "inference": {
+        "model_id": ".elser_model_2_linux-x86_64",
+        "input_output": [
+          {
+            "input_field": "semantic_text",
+            "output_field": "ml.inference.semantic_text_expanded"
+          }
+        ]
+      }
+    }
+  ]
+}
+
+
+# -------------------------------------------------------------
+# 2. Criar Índice com Mapping
+# -------------------------------------------------------------
+
+PUT /fresh_produce
+{
+  "settings": {
+    "default_pipeline": "elser-fresh-produce-pipeline"
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "integer"
+      },
+      "name": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "price": {
+        "type": "float"
+      },
+      "discount_price": {
+        "type": "float"
+      },
+      "stock_kg": {
+        "type": "float"
+      },
+      "category": {
+        "type": "keyword"
+      },
+      "description": {
+        "type": "text"
+      },
+      "on_sale": {
+        "type": "boolean"
+      },
+      "image_url": {
+        "type": "keyword"
+      },
+      "updated_at": {
+        "type": "date"
+      },
+      "semantic_text": {
+        "type": "text"
+      },
+      "ml.inference.semantic_text_expanded": {
+        "type": "sparse_vector"
+      }
+    }
+  }
+}
+
+
+# -------------------------------------------------------------
+# 3. Indexar 10 Produtos (Bulk API)
+# -------------------------------------------------------------
+
+POST /fresh_produce/_bulk
+{"index":{"_id":"1"}}
+{"id":1,"name":"Cherry Tomatoes","price":12.5,"discount_price":null,"stock_kg":85,"category":"vegetables","description":"Sweet cherry tomatoes, perfect for salads and snacking. Locally grown and fresh.","on_sale":false,"image_url":"https://imgur.com/w04NNaB.jpg","updated_at":"2026-02-08T10:00:00Z","semantic_text":"Cherry Tomatoes Sweet cherry tomatoes, perfect for salads and snacking. Locally grown and fresh. vegetables"}
+{"index":{"_id":"2"}}
+{"id":2,"name":"Organic Spinach","price":11.2,"discount_price":8.99,"stock_kg":55,"category":"vegetables","description":"Fresh organic spinach, rich in iron and nutrients. Great for smoothies and cooking.","on_sale":true,"image_url":"https://imgur.com/Qpchv67.jpg","updated_at":"2026-02-08T10:00:00Z","semantic_text":"Organic Spinach Fresh organic spinach, rich in iron and nutrients. Great for smoothies and cooking. vegetables"}
+{"index":{"_id":"3"}}
+{"id":3,"name":"Fresh Broccoli","price":8.9,"discount_price":null,"stock_kg":65,"category":"vegetables","description":"Nutritious green broccoli, rich in vitamins and fiber. Perfect for steaming or stir-frying.","on_sale":false,"image_url":"https://imgur.com/hTU3nNa.jpg","updated_at":"2026-02-08T10:00:00Z","semantic_text":"Fresh Broccoli Nutritious green broccoli, rich in vitamins and fiber. Perfect for steaming or stir-frying. vegetables"}
+{"index":{"_id":"4"}}
+{"id":4,"name":"Yellow Bell Pepper","price":14.5,"discount_price":11.99,"stock_kg":40,"category":"vegetables","description":"Vibrant yellow bell pepper, sweet and crunchy. Rich in vitamin C and antioxidants.","on_sale":true,"image_url":"https://imgur.com/a6v6ej8.jpg","updated_at":"2026-02-08T10:00:00Z","semantic_text":"Yellow Bell Pepper Vibrant yellow bell pepper, sweet and crunchy. Rich in vitamin C and antioxidants. vegetables"}
+{"index":{"_id":"5"}}
+{"id":5,"name":"Purple Onions","price":6.75,"discount_price":null,"stock_kg":90,"category":"vegetables","description":"Mild and sweet purple onions, great for salads and grilling. Adds beautiful color to dishes.","on_sale":false,"image_url":"https://imgur.com/Aos2og5.jpg","updated_at":"2026-02-08T10:00:00Z","semantic_text":"Purple Onions Mild and sweet purple onions, great for salads and grilling. Adds beautiful color to dishes. vegetables"}
+{"index":{"_id":"6"}}
+{"id":6,"name":"Ripe Avocados","price":18.9,"discount_price":15.99,"stock_kg":30,"category":"fruits","description":"Creamy ripe avocados, perfect for guacamole and toast. Rich in healthy fats.","on_sale":true,"image_url":"https://imgur.com/gJnDpva.jpg","updated_at":"2026-02-08T10:00:00Z","semantic_text":"Ripe Avocados Creamy ripe avocados, perfect for guacamole and toast. Rich in healthy fats. fruits"}
+{"index":{"_id":"7"}}
+{"id":7,"name":"Sweet Carrots","price":7.5,"discount_price":null,"stock_kg":70,"category":"vegetables","description":"Sweet and crunchy orange carrots. High in beta-carotene and vitamin A.","on_sale":false,"image_url":"https://imgur.com/jH4SbhK.jpg","updated_at":"2026-02-08T10:00:00Z","semantic_text":"Sweet Carrots Sweet and crunchy orange carrots. High in beta-carotene and vitamin A. vegetables"}
+{"index":{"_id":"8"}}
+{"id":8,"name":"Purple Carrots","price":9.8,"discount_price":null,"stock_kg":48,"category":"vegetables","description":"Unique purple carrots, sweet and antioxidant-rich. Great roasted or raw in salads.","on_sale":false,"image_url":"https://imgur.com/jH4SbhK.jpg","updated_at":"2026-02-08T10:00:00Z","semantic_text":"Purple Carrots Unique purple carrots, sweet and antioxidant-rich. Great roasted or raw in salads. vegetables"}
+{"index":{"_id":"9"}}
+{"id":9,"name":"Green Lettuce","price":5.99,"discount_price":null,"stock_kg":60,"category":"vegetables","description":"Crisp green lettuce, perfect for fresh salads. Low calorie and refreshing.","on_sale":false,"image_url":"https://imgur.com/Z5klm1s.jpg","updated_at":"2026-02-08T10:00:00Z","semantic_text":"Green Lettuce Crisp green lettuce, perfect for fresh salads. Low calorie and refreshing. vegetables"}
+{"index":{"_id":"10"}}
+{"id":10,"name":"Seedless Watermelon","price":22.5,"discount_price":19.99,"stock_kg":120,"category":"fruits","description":"Sweet and juicy seedless watermelon. Perfect for hot days, rich in hydration.","on_sale":true,"image_url":"https://imgur.com/v1yJ0Zn.jpg","updated_at":"2026-02-08T10:00:00Z","semantic_text":"Seedless Watermelon Sweet and juicy seedless watermelon. Perfect for hot days, rich in hydration. fruits"}
+
+
+# -------------------------------------------------------------
+# 4. Validação - Busca Semântica
+# -------------------------------------------------------------
+
+GET /fresh_produce/_search
+{
+  "query": {
+    "sparse_vector": {
+      "field": "ml.inference.semantic_text_expanded",
+      "inference_id": ".elser_model_2_linux-x86_64",
+      "query": "healthy colorful meals"
+    }
+  },
+  "size": 5,
+  "_source": ["name", "description", "category"]
+}
+
+
+# -------------------------------------------------------------
+# 5. Criar API Key (Read-Only)
+# -------------------------------------------------------------
+
+POST /_security/api_key
+{
+  "name": "searchclaw-readonly",
+  "role_descriptors": {
+    "fresh_produce_reader": {
+      "cluster": ["monitor"],
+      "indices": [
+        {
+          "names": ["fresh_produce"],
+          "privileges": ["read", "view_index_metadata"]
+        }
+      ]
+    }
+  }
+}
